@@ -1,0 +1,48 @@
+export NMU
+
+"""
+    NMU(in::Int, out::Int; init=rand)
+
+Neural multiplication unit. Can represent multiplications between inputs.
+Weights are clipped to [0,1].
+
+Lacks the regularization suggested in https://openreview.net/pdf?id=H1gNOeHKPS
+as it is intended to be used with ARD (automatic relevance determination)
+"""
+struct NMU
+    W::AbstractMatrix
+end
+
+NMU(in::Int, out::Int; init=rand) = NMU(init(out,in))
+
+
+# softmaximum(x,y;k=10) = log(exp(k*x) + exp(k*y)) / k
+# softminimum(x,y;k=10) = -softmaximum(-x,-y)
+# weights(m::NMU) = softminimum.(softmaximum.(m.W, 0), 1)
+
+weights(m::NMU) = min.(max.(m.W, 0), 1)
+
+# custom adjoint for product until https://github.com/FluxML/Zygote.jl/pull/112
+# is merged
+product(x::AbstractArray; dims=dims) = prod(x; dims=dims)
+
+Zygote.@adjoint function product(xs; dims = :)
+    p = prod(xs; dims = dims)
+    p, Δ -> (p ./ xs .* Δ,)
+end
+
+function (m::NMU)(x::AbstractVector)
+    W = weights(m)
+    z = W .* reshape(x,1,:) .+ 1 .- W
+    dropdims(product(z, dims=2), dims=2)
+end
+
+function (m::NMU)(x::AbstractMatrix)
+    buf = Zygote.Buffer(x, size(m.W,1), size(x,2))
+    for i in 1:size(x,2)
+        buf[:,i] = m(x[:,i])
+    end
+    copy(buf)
+end
+
+Flux.@functor NMU
