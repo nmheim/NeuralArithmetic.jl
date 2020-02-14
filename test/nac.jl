@@ -8,9 +8,10 @@
     ps = params(nac)
     @test length(ps) == 2
 
-    loss() = sum(abs, nac(x))
-    gs = Flux.gradient(loss, ps)
-    for p in ps
-        @test size(gs[p]) == size(p)
-    end
+    loss() = Flux.mse(nac(x), reshape(repeat(x[1,:], inner=(3,1)),3,10))
+    opt = RMSProp()
+    train_data = Iterators.repeated((), 10000)
+    Flux.train!(loss, ps, train_data, opt)
+
+    @test all(isapprox.(weights(nac), [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-2))
 end
