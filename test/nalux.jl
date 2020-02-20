@@ -25,4 +25,9 @@
 
     @test all(isapprox.(real.(nalu.M), [1.0 1.0; 1.0 1.0; 1.0 1.0], atol=1e-2))
     @test all(isapprox.(gate(nalu, x[:,1]), [0.0, 0.0, 0.0], atol=1e-2))
+
+    len = NeuralArithmetic.real_paramlength(nalu)
+    @test NeuralArithmetic.restructure(nalu, rand(Float32, len)) isa NALUX
+    len = NeuralArithmetic.complex_paramlength(nalu)
+    @test NeuralArithmetic.restructure(nalu, Complex.(rand(Float32, len))) isa NALUX
 end
