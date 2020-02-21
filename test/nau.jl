@@ -11,5 +11,5 @@
     opt = ADAM()
     train_data = Iterators.repeated((), 10000)
     Flux.train!(loss, ps, train_data, opt)
-    @test all(isapprox.(nau.W, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-5))
+    @test all(isapprox.(nau.W, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-4))
 end
