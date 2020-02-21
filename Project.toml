@@ -1,7 +1,7 @@
 name = "NeuralArithmetic"
 uuid = "ab1feca7-9272-4c7d-b713-789d3461e743"
 authors = ["Niklas Heim <niklas.heim@aic.fel.cvut.cz>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
@@ -13,8 +13,8 @@ Zygote = "0.4"
 julia = "1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "LinearAlgebra"]
