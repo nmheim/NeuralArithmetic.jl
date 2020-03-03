@@ -10,4 +10,4 @@ include("nmux.jl")
 
 include("nac.jl")
 include("nalu.jl")
-# include("nalux.jl")
+include("nalux.jl")
