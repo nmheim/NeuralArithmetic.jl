@@ -22,19 +22,10 @@ NMU(in::Int, out::Int; init=rand) = NMU(init(out,in))
 
 weights(m::NMU) = min.(max.(m.W, 0), 1)
 
-# custom adjoint for product until https://github.com/FluxML/Zygote.jl/pull/112
-# is merged
-product(x::AbstractArray; dims=dims) = prod(x; dims=dims)
-
-Zygote.@adjoint function product(xs; dims = :)
-    p = prod(xs; dims = dims)
-    p, Δ -> (p ./ xs .* Δ,)
-end
-
 function (m::NMU)(x::AbstractVector)
     W = weights(m)
     z = W .* reshape(x,1,:) .+ 1 .- W
-    dropdims(product(z, dims=2), dims=2)
+    dropdims(prod(z, dims=2), dims=2)
 end
 
 function (m::NMU)(x::AbstractMatrix)
