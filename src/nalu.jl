@@ -25,14 +25,13 @@ function NALU(in::Int, out::Int;
     NALU(nac, G, b)
 end
 
-addition(nalu::NALU, x) = nalu.nac(x)
-multiplication(nalu::NALU, x) = exp.(nalu.nac(log.(abs.(x) .+ nalu.ϵ)))
+add(nalu::NALU, x) = nalu.nac(x)
+mult(nalu::NALU, x) = exp.(nalu.nac(log.(abs.(x) .+ nalu.ϵ)))
 gate(nalu::NALU, x) = σ.(nalu.G*x .+ nalu.b)
 
 function (nalu::NALU)(x)
-    nac, G, b, ϵ = nalu.nac, nalu.G, nalu.b, nalu.ϵ
-    a = addition(nalu, x)
-    m = multiplication(nalu, x)
+    a = add(nalu, x)
+    m = mult(nalu, x)
     g = gate(nalu, x)
     g .* a .+ (1.0 .- g) .* m
 end
