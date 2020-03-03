@@ -10,5 +10,6 @@ include("nalux.jl")
 
 include("nau.jl")
 include("nmu.jl")
+include("nmux.jl")
 
 end # module
