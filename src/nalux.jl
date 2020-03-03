@@ -25,12 +25,6 @@ Flux.@functor NALUX
 
 gate(l::NALUX, x) = σ.(l.G(x))
 
-function mult(rM::AbstractMatrix{T}, iM::AbstractMatrix{T}, x::AbstractArray{T}) where T
-    k = map(i -> T(i < 0 ? pi : 0.0), x)
-    r = abs.(x)
-    exp.(rM*log.(r) - iM*k) .* cos.(rM*k + iM*log.(r))
-end
-
 mult(l::NALUX, x) = mult(l.rM, l.iM, x)
 
 function (l::NALUX)(x::AbstractArray{<:Real})
