@@ -26,3 +26,19 @@ function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T})
 end
 
 (l::NMUX)(x) = mult(l.Re, l.Im, x)
+
+
+struct ReNMUX
+    M::AbstractMatrix
+end
+
+ReNMUX(in::Int, out::Int, initM=glorot_uniform) = ReNMUX(initM(out,in))
+Flux.@functor ReNMUX
+
+function mult(M::AbstractMatrix{T}, x::AbstractArray{T}) where T
+    r = abs.(x)
+    k = map(i -> T(i < 0 ? pi : 0.0), x)
+    exp.(M * log.(r)) .* cos.(M*k)
+end
+
+(l::ReNMUX)(x) = mult(l.M, x)
