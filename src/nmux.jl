@@ -1,4 +1,4 @@
-export NMUX
+export NMUX, ReNMUX
 
 """
     NMUX(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
