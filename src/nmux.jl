@@ -11,7 +11,7 @@ struct NMUX
     Im::AbstractMatrix
 end
 
-function NMUX(in::Int, out::Int, initRe=glorot_uniform, initIm=Flux.zeros)
+function NMUX(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros)
     Re = initRe(out, in)
     Im = initIm(out, in)
     NMUX(Re, Im)
@@ -32,7 +32,7 @@ struct ReNMUX
     M::AbstractMatrix
 end
 
-ReNMUX(in::Int, out::Int, init=glorot_uniform) = ReNMUX(init(out,in))
+ReNMUX(in::Int, out::Int; init=glorot_uniform) = ReNMUX(init(out,in))
 Flux.@functor ReNMUX
 
 function mult(M::AbstractMatrix{T}, x::AbstractArray{T}) where T
