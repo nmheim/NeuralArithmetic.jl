@@ -20,7 +20,7 @@ end
 Flux.@functor NMUX
 
 function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
-    r = abs.(x)
+    r = abs.(x) .+ eps(T)
     k = map(i -> T(i < 0 ? pi : 0.0), x)
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
@@ -36,7 +36,7 @@ ReNMUX(in::Int, out::Int; init=glorot_uniform) = ReNMUX(init(out,in))
 Flux.@functor ReNMUX
 
 function mult(M::AbstractMatrix{T}, x::AbstractArray{T}) where T
-    r = abs.(x)
+    r = abs.(x) .+ eps(T)
     k = map(i -> T(i < 0 ? pi : 0.0), x)
     exp.(M * log.(r)) .* cos.(M*k)
 end
