@@ -29,16 +29,16 @@ end
 
 
 struct ReNMUX
-    M::AbstractMatrix
+    W::AbstractMatrix
 end
 
 ReNMUX(in::Int, out::Int; init=glorot_uniform) = ReNMUX(init(out,in))
 Flux.@functor ReNMUX
 
-function mult(M::AbstractMatrix{T}, x::AbstractArray{T}) where T
+function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
     k = map(i -> T(i < 0 ? pi : 0.0), x)
-    exp.(M * log.(r)) .* cos.(M*k)
+    exp.(W * log.(r)) .* cos.(W*k)
 end
 
-(l::ReNMUX)(x) = mult(l.M, x)
+(l::ReNMUX)(x) = mult(l.W, x)
