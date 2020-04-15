@@ -6,7 +6,7 @@ using Flux: glorot_uniform, destructure
 
 include("nau.jl")
 include("nmu.jl")
-include("nmux.jl")
+include("npu.jl")
 
 include("nac.jl")
 include("nalu.jl")

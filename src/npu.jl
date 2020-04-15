@@ -1,23 +1,24 @@
-export NMUX, ReNMUX
+export NPUX, NPU
 
 """
-    NMUX(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
+    NPU(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
 
-NMU that can learn any power function by using a complex multiplication matrix.
+Neural Power Unit that can learn any power function by using a complex
+multiplication matrix.
 """
 
-struct NMUX
+struct NPUX
     Re::AbstractMatrix
     Im::AbstractMatrix
 end
 
-function NMUX(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros)
+function NPUX(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros)
     Re = initRe(out, in)
     Im = initIm(out, in)
-    NMUX(Re, Im)
+    NPUX(Re, Im)
 end
 
-Flux.@functor NMUX
+Flux.@functor NPUX
 
 function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
@@ -25,15 +26,15 @@ function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T})
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
 
-(l::NMUX)(x) = mult(l.Re, l.Im, x)
+(l::NPUX)(x) = mult(l.Re, l.Im, x)
 
 
-struct ReNMUX
+struct NPU
     W::AbstractMatrix
 end
 
-ReNMUX(in::Int, out::Int; init=glorot_uniform) = ReNMUX(init(out,in))
-Flux.@functor ReNMUX
+NPU(in::Int, out::Int; init=glorot_uniform) = NPU(init(out,in))
+Flux.@functor NPU
 
 function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
@@ -41,4 +42,4 @@ function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
     exp.(W * log.(r)) .* cos.(W*k)
 end
 
-(l::ReNMUX)(x) = mult(l.W, x)
+(l::NPU)(x) = mult(l.W, x)
