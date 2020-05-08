@@ -74,3 +74,5 @@ function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) w
     k = map(i -> T(i < 0 ? pi : 0.0), x)
     z = exp.(W * log.(r)) .* cos.(W*k)
 end
+
+(l::GatedNPU)(x) = mult(l.W, l.g, x)
