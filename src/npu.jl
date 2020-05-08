@@ -1,4 +1,4 @@
-export NPUX, NPU
+export NPUX, NPU, GatedNPU
 
 """
     NPU(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
