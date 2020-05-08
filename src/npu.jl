@@ -43,3 +43,34 @@ function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
 end
 
 (l::NPU)(x) = mult(l.W, x)
+
+
+"""
+    GatedNPU(in::Int, out::Int; init=glorot_uniform)
+
+Neural Power Unit that can learn any power function. Uses gating on inputs
+to simplify learning. In 1D the layer looks like:
+
+    g = min(max(g, 0), 1)
+    r = abs(x) + eps(T)
+    r = g*r + (1-g)*T(1)
+    k = r < 0 ? pi : 0.0
+    exp(W*log(r)) * cos(W*k)
+"""
+struct GatedNPU
+    W::AbstractMatrix
+    g::AbstractVector
+end
+
+GatedNPU(in::Int, out::Int; init=Flux.glorot_uniform) =
+    GatedNPU(init(out,in), Flux.ones(in)/2)
+
+Flux.@functor GatedNPU
+
+function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
+    g = min.(max.(g, 0), 1)
+    r = abs.(x) .+ eps(T)
+    r = g .* r .+ (1 .- g) .* T(1)
+    k = map(i -> T(i < 0 ? pi : 0.0), x)
+    z = exp.(W * log.(r)) .* cos.(W*k)
+end
