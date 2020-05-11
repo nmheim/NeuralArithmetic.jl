@@ -22,7 +22,7 @@ Flux.@functor NPUX
 
 function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
-    k = map(i -> T(i < 0 ? pi : 0.0), x)
+    k = max.(-sign.(x), 0) .* T(pi)
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
 
@@ -38,7 +38,7 @@ Flux.@functor NPU
 
 function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
-    k = map(i -> T(i < 0 ? pi : 0.0), x)
+    k = max.(-sign.(x), 0) .* T(pi)
     exp.(W * log.(r)) .* cos.(W*k)
 end
 
@@ -71,7 +71,7 @@ function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) w
     g = min.(max.(g, 0), 1)
     r = abs.(x) .+ eps(T)
     r = g .* r .+ (1 .- g) .* T(1)
-    k = map(i -> T(i < 0 ? pi : 0.0), x)
+    k = max.(-sign.(x), 0) .* T(pi)
     z = exp.(W * log.(r)) .* cos.(W*k)
 end
 
