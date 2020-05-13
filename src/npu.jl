@@ -69,9 +69,13 @@ Flux.@functor GatedNPU
 
 function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
     g = min.(max.(g, 0), 1)
+
     r = abs.(x) .+ eps(T)
     r = g .* r .+ (1 .- g) .* T(1)
+
     k = max.(-sign.(x), 0) .* T(pi)
+    k = g .* k .+ (1 .- g) .* T(0)
+
     z = exp.(W * log.(r)) .* cos.(W*k)
 end
 
