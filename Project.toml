@@ -4,7 +4,6 @@ authors = ["Niklas Heim <niklas.heim@aic.fel.cvut.cz>"]
 version = "0.2.0"
 
 [deps]
-CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
@@ -14,6 +13,7 @@ Zygote = "0.4"
 julia = "1"
 
 [extras]
+CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 

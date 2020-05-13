@@ -7,7 +7,7 @@
     ps = params(nmu)
     @test length(ps) == 1
 
-    loss() = Flux.mse(nmu(x), reshape(repeat(x[1,:], inner=(3,1)),3,10))
+    loss() = sum(abs2, nmu(x) .- reshape(x[1,:],1,:))
     opt = ADAM()
     train_data = Iterators.repeated((), 5000)
     Flux.train!(loss, ps, train_data, opt)
