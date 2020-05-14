@@ -1,4 +1,4 @@
-export NPUX, NPU, GatedNPU
+export NPUX, NPU, GatedNPU, GatedNPUX
 
 """
     NPU(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
@@ -27,6 +27,36 @@ function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T})
 end
 
 (l::NPUX)(x) = mult(l.Re, l.Im, x)
+
+
+struct GatedNPUX{M<:AbstractMatrix,V<:AbstractVector}
+    Re::M
+    Im::M
+    g::V
+end
+
+function GatedNPUX(in::Int, out::Int;
+                   initRe=glorot_uniform, initIm=Flux.zeros)
+   Re = initRe(out, in) 
+   Im = initIm(out, in)
+   g  = Flux.ones(in)/2
+   GatedNPUX(Re,Im,g)
+end
+
+Flux.@functor GatedNPUX
+
+function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
+    g = min.(max.(g, 0), 1)
+
+    r = abs.(x) .+ eps(T)
+    r = g .* r .+ (1 .- g) .* T(1)
+
+    k = max.(-sign.(x), 0) .* T(pi)
+    k = g .* k .+ (1 .- g) .* T(0)
+
+    exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
+end
+(l::GatedNPUX)(x) = mult(l.Re, l.Im, l.g, x)
 
 
 struct NPU
