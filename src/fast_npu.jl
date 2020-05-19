@@ -3,7 +3,7 @@ using Zygote
 using Flux
 using ForwardDiff
 
-struct FastGatedNPUX{F}
+struct FastGatedNPUX{F} <: DiffEqFlux.FastLayer
     in::Int
     out::Int
     initial_params::F
