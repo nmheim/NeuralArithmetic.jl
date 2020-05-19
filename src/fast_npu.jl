@@ -47,7 +47,7 @@ Zygote.@adjoint function (f::FastGatedNPUX)(x::AbstractVector,p::AbstractVector)
         f(x,p)
     end
 
-    Jz = ForwardDiff.jacobian(_f, vcat(x, p))
+    Jz = ForwardDiff.partials.(ForwardDiff.jacobian(_f, vcat(x, p)))
     Jx = Jz[:,1:lenx]
     Jp = Jz[:,(lenx+1):end]
     f(x,p), Δ -> (@show size(Δ); (nothing, (Δ'*Jx)', (Δ'*Jp)'))
