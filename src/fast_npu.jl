@@ -39,19 +39,19 @@ function (f::FastGatedNPUX)(x::AbstractMatrix,p::AbstractVector)
     NeuralArithmetic.mult(Re,Im,g,x)
 end
 
-Zygote.@adjoint function (f::FastGatedNPUX)(x::AbstractVector,p::AbstractVector)
-    lenx = length(x)
-    function _f(z::Vector)
-        x = reshape(z[1:lenx], lenx)
-        p = z[(lenx+1):end]
-        f(x,p)
-    end
-
-    Jz = ForwardDiff.partials.(ForwardDiff.jacobian(_f, vcat(x, p)))
-    Jx = Jz[:,1:lenx]
-    Jp = Jz[:,(lenx+1):end]
-    f(x,p), Δ -> (@show size(Δ); (nothing, (Δ'*Jx)', (Δ'*Jp)'))
-end
+# Zygote.@adjoint function (f::FastGatedNPUX)(x::AbstractVector,p::AbstractVector)
+#     lenx = length(x)
+#     function _f(z::Vector)
+#         x = reshape(z[1:lenx], lenx)
+#         p = z[(lenx+1):end]
+#         f(x,p)
+#     end
+# 
+#     Jz = ForwardDiff.partials.(ForwardDiff.jacobian(_f, vcat(x, p)))
+#     Jx = Jz[:,1:lenx]
+#     Jp = Jz[:,(lenx+1):end]
+#     f(x,p), Δ -> (@show size(Δ); (nothing, (Δ'*Jx)', (Δ'*Jp)'))
+# end
 
 # Zygote.@adjoint function (f::FastGatedNPUX)(x::AbstractMatrix,p::AbstractVector)
 #     display("matrix ajdoint")

@@ -12,7 +12,7 @@
     gs = Flux.gradient(loss, ps)
     gs = vcat([vec(gs[p]) for p in ps]...)
 
-    fastnpu = NeuralArithmetic.FastGatedNPUX(2,3)
+    fastnpu = FastGatedNPUX(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
 
     p = Flux.destructure(npu)[1]
