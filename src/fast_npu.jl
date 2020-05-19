@@ -16,8 +16,8 @@ struct FastGatedNPUX{F} <: DiffEqFlux.FastLayer
     end
 end
 
-param_length(f::FastGatedNPUX) = (f.out*f.in)*2 + f.in
-initial_params(f::FastGatedNPUX) = f.initial_params()
+DiffEqFlux.param_length(f::FastGatedNPUX) = (f.out*f.in)*2 + f.in
+DiffEqFlux.initial_params(f::FastGatedNPUX) = f.initial_params()
 
 function _restructure(f::FastGatedNPUX, p::AbstractVector)
     len = f.out * f.in

@@ -23,14 +23,14 @@ struct FastNAU{F} <: DiffEqFlux.FastLayer
     in::Int
     out::Int
     initial_params::F
-    function FastNAU(in::Int, out::Int, init=Flux.glorot_uniform)
+    function FastNAU(in::Int, out::Int; init=Flux.glorot_uniform)
         initial_params() = vec(init(out,in))
         new{typeof(initial_params)}(in, out, initial_params)
     end
 end
 
-param_length(f::FastNAU) = f.out * f.in
-initial_params(f::FastNAU) = f.initial_params()
+DiffEqFlux.param_length(f::FastNAU) = f.out * f.in
+DiffEqFlux.initial_params(f::FastNAU) = f.initial_params()
 
 (f::FastNAU)(x,p) = reshape(p, f.out, f.in) * x
 
