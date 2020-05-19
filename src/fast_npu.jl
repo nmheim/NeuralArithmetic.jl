@@ -16,7 +16,7 @@ struct FastGatedNPUX{F} <: DiffEqFlux.FastLayer
     end
 end
 
-DiffEqFlux.param_length(f::FastGatedNPUX) = (f.out*f.in)*2 + f.in
+DiffEqFlux.paramlength(f::FastGatedNPUX) = (f.out*f.in)*2 + f.in
 DiffEqFlux.initial_params(f::FastGatedNPUX) = f.initial_params()
 
 function _restructure(f::FastGatedNPUX, p::AbstractVector)
@@ -90,12 +90,12 @@ end
 # Random.seed!(0)
 # m = FastGatedNPUX(2,3)
 # x = rand(2)
-# p = rand(param_length(m))
+# p = rand(paramlength(m))
 # loss(x) = sum(m(x,p))
 # @show Flux.gradient(loss,x)[1]
 
 # x = rand(2,6)
-# p = rand(param_length(m))
+# p = rand(paramlength(m))
 # loss(x) = sum(m(x,p))
 # Flux.gradient(loss,x)[1]
 # @show "asdf"

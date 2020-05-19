@@ -29,7 +29,7 @@ struct FastNAU{F} <: DiffEqFlux.FastLayer
     end
 end
 
-DiffEqFlux.param_length(f::FastNAU) = f.out * f.in
+DiffEqFlux.paramlength(f::FastNAU) = f.out * f.in
 DiffEqFlux.initial_params(f::FastNAU) = f.initial_params()
 
 (f::FastNAU)(x,p) = reshape(p, f.out, f.in) * x
