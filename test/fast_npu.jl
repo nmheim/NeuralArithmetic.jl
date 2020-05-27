@@ -36,7 +36,7 @@ end
 
     @test size(z) == (3,10)
     ps = params(npu)
-    @test length(ps) == 3
+    @test length(ps) == 2
 
     loss() = sum(abs2, npu(x) .- reshape(x[1,:],1,:))
     gs = Flux.gradient(loss, ps)
