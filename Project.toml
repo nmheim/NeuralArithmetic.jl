@@ -9,6 +9,8 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
+Flux = "0.10"
+Zygote = "0.4"
 julia = "1"
 
 [extras]
