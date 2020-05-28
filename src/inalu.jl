@@ -27,13 +27,13 @@ function iNALU(in::Int, out::Int;
     iNALU(a_nac,m_nac,G,ϵ,ω)
 end
 
-function sign(nalu::iNALU, x::AbstractVector) 
+function Base.sign(nalu::iNALU, x::AbstractVector) 
     W  = abs.(weights(nalu.m_nac))
     sm = reshape(sign.(x),1,:) .* W .+ 1 .- W
     s  = vec(prod(sm, dims=2))
 end
 
-function sign(nalu::iNALU, x::AbstractMatrix) 
+function Base.sign(nalu::iNALU, x::AbstractMatrix) 
     buf = Zygote.Buffer(x, size(nalu.G,1), size(x,2))
     for i in 1:size(x,2)
         buf[:,i] = sign(nalu, x[:,i])
