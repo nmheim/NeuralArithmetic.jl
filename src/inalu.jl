@@ -27,19 +27,29 @@ function iNALU(in::Int, out::Int;
     iNALU(a_nac,m_nac,G,ϵ,ω)
 end
 
-function (m::iNALU)(x)
-    # add / mult paths
-    a = m.a_nac(x)
-    m = exp.(min.(m.m_nac(log.(max.(abs.(x),m.ϵ))),m.ω))
-
-    # sign recovery
-    W  = abs.(weights(m.m_nac))
-    sm = sign.(x) .* W .+ 1 .- W
+function sign(nalu::iNALU, x::AbstractVector) 
+    W  = abs.(weights(nalu.m_nac))
+    sm = reshape(sign.(x),1,:) .* W .+ 1 .- W
     s  = vec(prod(sm, dims=2))
+end
 
-    # add/mult gate
-    g = σ.(m.G*x .+ m.b)
+function sign(nalu::iNALU, x::AbstractMatrix) 
+    buf = Zygote.Buffer(x, size(nalu.G,1), size(x,2))
+    for i in 1:size(x,2)
+        buf[:,i] = sign(nalu, x[:,i])
+    end
+    copy(buf)
+end
 
+add(nalu::iNALU, x) = nalu.a_nac(x)
+mult(nalu::iNALU, x) = exp.(min.(nalu.m_nac(log.(max.(abs.(x),nalu.ϵ))),nalu.ω))
+gate(nalu::iNALU, x) = σ.(nalu.G*x)
+
+function (nalu::iNALU)(x)
+    a = add(nalu, x)
+    m = mult(nalu, x)
+    s = sign(nalu, x)
+    g = gate(nalu, x)
     g .* a .+ (1.0 .- g) .* m .* s
 end
 
