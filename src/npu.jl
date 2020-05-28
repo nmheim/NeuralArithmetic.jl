@@ -49,10 +49,10 @@ function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, g::AbstractVector{T}
     g = min.(max.(g, 0), 1)
 
     r = abs.(x) .+ eps(T)
-    r = g .* r .+ (1 .- g) .* T(1)
+    r = g .* r .+ (1 .- g)
 
     k = max.(-sign.(x), 0) .* T(pi)
-    k = g .* k .+ (1 .- g) .* T(0)
+    k = g .* k
 
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
@@ -101,10 +101,10 @@ function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) w
     g = min.(max.(g, 0), 1)
 
     r = abs.(x) .+ eps(T)
-    r = g .* r .+ (1 .- g) .* T(1)
+    r = g .* r .+ (1 .- g)
 
     k = max.(-sign.(x), 0) .* T(pi)
-    k = g .* k .+ (1 .- g) .* T(0)
+    k = g .* k
 
     z = exp.(W * log.(r)) .* cos.(W*k)
 end
