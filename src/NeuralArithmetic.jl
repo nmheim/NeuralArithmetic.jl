@@ -16,6 +16,6 @@ end
 
 include("nac.jl")
 include("nalu.jl")
-include("nalux.jl")
+include("inalu.jl")
 
 end # module
