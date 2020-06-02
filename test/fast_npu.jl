@@ -15,7 +15,7 @@
     fastnpu = FastNPU(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
     @test DiffEqFlux.paramlength(fastnpu) == 14
-    @test length(DiffEqFlux.initial_params(fastnau)) == 14
+    @test length(DiffEqFlux.initial_params(fastnpu)) == 14
 
     p = Flux.destructure(npu)[1]
     gf = Flux.gradient(loss, p)[1]
