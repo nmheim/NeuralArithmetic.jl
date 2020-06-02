@@ -39,12 +39,7 @@ function _restructure(f::FastNPU, p::AbstractVector)
     return (Re,Im,g)
 end
 
-function (f::FastNPU)(x::AbstractVector,p::AbstractVector)
-    (Re,Im,g) = _restructure(f,p)
-    mult(Re,Im,g,x)
-end
-
-function (f::FastNPU)(x::AbstractMatrix,p::AbstractVector)
+function (f::FastNPU)(x::AbstractArray,p::AbstractVector)
     (Re,Im,g) = _restructure(f,p)
     mult(Re,Im,g,x)
 end
@@ -75,12 +70,7 @@ function _restructure(f::FastRealNPU, p::AbstractVector)
     return (W,g)
 end
 
-function (f::FastRealNPU)(x::AbstractVector,p::AbstractVector)
-    (W,g) = _restructure(f,p)
-    mult(W,g,x)
-end
-
-function (f::FastRealNPU)(x::AbstractMatrix,p::AbstractVector)
+function (f::FastRealNPU)(x::AbstractArray,p::AbstractVector)
     (W,g) = _restructure(f,p)
     mult(W,g,x)
 end

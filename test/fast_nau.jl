@@ -10,6 +10,8 @@
 
     fastnau = FastNAU(2,3)
     loss(p) = sum(abs2, fastnau(x,p) .- reshape(x[1,:],1,:))
+    @test DiffEqFlux.paramlength(fastnau) == 6
+    @test length(DiffEqFlux.initial_params(fastnau)) == 6
 
     p = vec(nau.W)
     gf = Flux.gradient(loss, p)[1]
