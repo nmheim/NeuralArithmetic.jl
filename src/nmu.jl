@@ -6,8 +6,7 @@ export NMU
 Neural multiplication unit. Can represent multiplications between inputs.
 Weights are clipped to [0,1].
 
-Lacks the regularization suggested in https://openreview.net/pdf?id=H1gNOeHKPS
-as it is intended to be used with ARD (automatic relevance determination)
+As introduced in in https://openreview.net/pdf?id=H1gNOeHKPS
 """
 struct NMU
     W::AbstractMatrix

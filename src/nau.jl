@@ -5,8 +5,7 @@ export NAU
 
 Neural addition unit.
 
-Lacks the regularization suggested in https://openreview.net/pdf?id=H1gNOeHKPS
-as it is intended to be used with ARD (automatic relevance determination)
+As suggested in https://openreview.net/pdf?id=H1gNOeHKPS
 """
 struct NAU
     W::AbstractMatrix
