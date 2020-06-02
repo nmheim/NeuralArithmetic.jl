@@ -12,6 +12,6 @@ include("nac.jl")
 include("nalu.jl")
 include("inalu.jl")
 
-# using DiffEqFlux
-# include("fast_nau.jl")
-# include("fast_npu.jl")
+using DiffEqFlux
+include("fast_nau.jl")
+include("fast_npu.jl")
