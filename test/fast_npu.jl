@@ -1,6 +1,6 @@
-@testset "FastGatedNPUX" begin
+@testset "FastNPU" begin
 
-    npu = GatedNPUX(2,3)
+    npu = NPU(2,3)
     x = rand(Float32,2,10)
     z = npu(x)
 
@@ -12,7 +12,7 @@
     gs = Flux.gradient(loss, ps)
     gs = vcat([vec(gs[p]) for p in ps]...)
 
-    fastnpu = FastGatedNPUX(2,3)
+    fastnpu = FastNPU(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
 
     p = Flux.destructure(npu)[1]
@@ -28,9 +28,9 @@
     @test all(gs .== gf)
 end
 
-@testset "FastGatedNPU" begin
+@testset "FastRealNPU" begin
 
-    npu = GatedNPU(2,3)
+    npu = RealNPU(2,3)
     x = rand(Float32,2,10)
     z = npu(x)
 
@@ -42,7 +42,7 @@ end
     gs = Flux.gradient(loss, ps)
     gs = vcat([vec(gs[p]) for p in ps]...)
 
-    fastnpu = FastGatedNPU(2,3)
+    fastnpu = FastRealNPU(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
 
     p = Flux.destructure(npu)[1]
