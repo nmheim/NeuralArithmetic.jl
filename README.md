@@ -8,3 +8,7 @@ subtraction, multiplication, and division in a single layer.  Contains
 [NALU](https://arxiv.org/abs/1808.00508),
 [iNALU](https://arxiv.org/abs/2003.07629),
 [NMU](https://openreview.net/forum?id=H1gNOeHKPS), and [NPU](...)
+
+# Simple Neural Arithmetic
+
+![layers](img/layers.png)
