@@ -12,10 +12,10 @@ subtraction, multiplication, and division in a single layer.  Implements
 # Simple Neural Arithmetic
 
 As an example, we can train different layers to learn the function f
-```math
-f(x,y) &= (x+y,\, xy,\, x/y,\, \sqrt{x} \text{  })^T,
+```julia
+f(x,y) = (x+y, x*y, 1/x, sqrt(x))
 ```
-which two inputs and four outputs.  The figure below plots the prediction error
+which has two inputs and four outputs.  The figure below plots the prediction error
 of each layer and output for training and testing datapoints.  All layers that
 were trained on a range U(0.1,2).
 
