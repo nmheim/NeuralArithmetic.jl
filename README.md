@@ -9,6 +9,8 @@ subtraction, multiplication, and division in a single layer.  Implements
 [iNALU](https://arxiv.org/abs/2003.07629),
 [NMU & NAU](https://openreview.net/forum?id=H1gNOeHKPS), and [NPU](...).
 
+And additionally `FastNAU` and `FastNPU` for use with [DiffEqFlux.jl](https://github.com/SciML/DiffEqFlux.jl).
+
 # Simple Neural Arithmetic
 
 As an example, we can train different layers to learn the function f
