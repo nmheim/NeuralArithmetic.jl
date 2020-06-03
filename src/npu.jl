@@ -48,9 +48,9 @@ end
 
 NPU without imaginary weights.
 """
-struct RealNPU
-    W::AbstractMatrix
-    g::AbstractVector
+struct RealNPU{Tw<:AbstractMatrix,Tg<:AbstractVector}
+    W::Tw
+    g::Tg
 end
 
 RealNPU(in::Int, out::Int; init=Flux.glorot_uniform) =
@@ -78,9 +78,9 @@ end
 
 `NPU` without relevance gating mechanism.
 """
-struct NaiveNPU
-    Re::AbstractMatrix
-    Im::AbstractMatrix
+struct NaiveNPU{T<:AbstractMatrix}
+    Re::T
+    Im::T
 end
 
 function NaiveNPU(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros)
@@ -105,8 +105,8 @@ end
 
 NaiveNPU without imaginary weights.
 """
-struct RealNaiveNPU
-    W::AbstractMatrix
+struct RealNaiveNPU{T<:AbstractMatrix}
+    W::T
 end
 
 RealNaiveNPU(in::Int, out::Int; init=glorot_uniform) = RealNaiveNPU(init(out,in))
@@ -119,3 +119,10 @@ function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
 end
 
 (l::RealNaiveNPU)(x) = mult(l.W, x)
+
+
+
+Base.show(io::IO, l::NPU) = print(io,"NPU(in=$(size(l.Re,2)), out=$(size(l.Re,1))")
+Base.show(io::IO, l::NaiveNPU) = print(io,"NaiveNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1))")
+Base.show(io::IO, l::RealNPU) = print(io,"RealNPU(in=$(size(l.W,2)), out=$(size(l.W,1))")
+Base.show(io::IO, l::RealNaiveNPU) = print(io,"RealNaiveNPU(in=$(size(l.W,2)), out=$(size(l.W,1))")

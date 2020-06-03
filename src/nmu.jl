@@ -8,16 +8,11 @@ Weights are clipped to [0,1].
 
 As introduced in in https://openreview.net/pdf?id=H1gNOeHKPS
 """
-struct NMU
-    W::AbstractMatrix
+struct NMU{T<:AbstractMatrix}
+    W::T
 end
 
 NMU(in::Int, out::Int; init=rand) = NMU(init(out,in))
-
-
-# softmaximum(x,y;k=10) = log(exp(k*x) + exp(k*y)) / k
-# softminimum(x,y;k=10) = -softmaximum(-x,-y)
-# weights(m::NMU) = softminimum.(softmaximum.(m.W, 0), 1)
 
 weights(m::NMU) = min.(max.(m.W, 0), 1)
 
@@ -36,3 +31,5 @@ function (m::NMU)(x::AbstractMatrix)
 end
 
 Flux.@functor NMU
+
+Base.show(io::IO, l::NMU) = print(io,"NMU(in=$(size(l.W,2)), out=$(size(l.W,1))")
