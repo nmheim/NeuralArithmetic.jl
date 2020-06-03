@@ -7,12 +7,12 @@ export iNALU
 Improved NALU that can process negative numbers by recovering the multiplication
 sign. Implemented as suggested in: https://arxiv.org/abs/2003.07629
 """
-struct iNALU
+struct iNALU{Tg<:AbstractMatrix,T<:Real}
     a_nac::NAC
     m_nac::NAC
-    G::AbstractMatrix
-    ϵ::Real
-    ω::Real
+    G::Tg
+    ϵ::T
+    ω::T
 end
 
 Flux.@functor iNALU
@@ -53,8 +53,5 @@ function (nalu::iNALU)(x)
     g .* a .+ (1.0 .- g) .* m .* s
 end
 
-function Base.show(io::IO, l::iNALU)
-    in = size(l.G, 2)
-    out = size(l.G, 1)
-    print(io, "iNALU(in=$in, out=$out)")
-end
+Base.show(io::IO, l::iNALU) =
+  print(io, "iNALU(in=$(size(l.G,2)), out=$(size(l.G,1)))")

@@ -32,4 +32,4 @@ end
 
 Flux.@functor NMU
 
-Base.show(io::IO, l::NMU) = print(io,"NMU(in=$(size(l.W,2)), out=$(size(l.W,1))")
+Base.show(io::IO, l::NMU) = print(io,"NMU(in=$(size(l.W,2)), out=$(size(l.W,1)))")
