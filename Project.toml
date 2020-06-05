@@ -1,7 +1,7 @@
 name = "NeuralArithmetic"
 uuid = "ab1feca7-9272-4c7d-b713-789d3461e743"
 authors = ["Niklas Heim <niklas.heim@aic.fel.cvut.cz>"]
-version = "0.3.0"
+version = "1.0.0"
 
 [deps]
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
