@@ -3,14 +3,11 @@ export NAC
 """
     NAC(in::Int, out::Int; initW=glorot_uniform, initM=glorot_uniform)
 
-Neural Accumulator. Special case of affine layer in which the parameters
-are encouraged to be close to {-1, 0, 1}.
-
-Paper: https://arxiv.org/abs/1808.00508
+Neural Accumulator as proposed in https://arxiv.org/abs/1808.00508
 """
-struct NAC
-    W::AbstractMatrix
-    M::AbstractMatrix
+struct NAC{T<:AbstractMatrix}
+    W::T
+    M::T
 end
 
 function NAC(in::Int, out::Int;

@@ -5,14 +5,13 @@ export NALU
 
 Neural Arithmetic Logic Unit. Layer that is capable of learing multiplication,
 division, power functions, addition, and subtraction.
-
-Paper: https://arxiv.org/abs/1808.00508
+As proposed in: https://arxiv.org/abs/1808.00508
 """
-struct NALU
+struct NALU{Tg<:AbstractMatrix,Tb<:AbstractVector,Tϵ<:Real}
     nac::NAC
-    G::AbstractMatrix
-    b::AbstractVector
-    ϵ::Real
+    G::Tg
+    b::Tb
+    ϵ::Tϵ
 end
 
 NALU(nac::NAC, G::AbstractMatrix, b::AbstractVector) = NALU(nac, G, b, 1e-8)

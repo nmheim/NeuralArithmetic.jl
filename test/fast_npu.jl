@@ -1,6 +1,6 @@
-@testset "FastGatedNPUX" begin
+@testset "FastNPU" begin
 
-    npu = GatedNPUX(2,3)
+    npu = NPU(2,3)
     x = rand(Float32,2,10)
     z = npu(x)
 
@@ -12,8 +12,10 @@
     gs = Flux.gradient(loss, ps)
     gs = vcat([vec(gs[p]) for p in ps]...)
 
-    fastnpu = FastGatedNPUX(2,3)
+    fastnpu = FastNPU(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
+    @test DiffEqFlux.paramlength(fastnpu) == 14
+    @test length(DiffEqFlux.initial_params(fastnpu)) == 14
 
     p = Flux.destructure(npu)[1]
     gf = Flux.gradient(loss, p)[1]
@@ -28,9 +30,9 @@
     @test all(gs .== gf)
 end
 
-@testset "FastGatedNPU" begin
+@testset "FastRealNPU" begin
 
-    npu = GatedNPU(2,3)
+    npu = RealNPU(2,3)
     x = rand(Float32,2,10)
     z = npu(x)
 
@@ -42,8 +44,10 @@ end
     gs = Flux.gradient(loss, ps)
     gs = vcat([vec(gs[p]) for p in ps]...)
 
-    fastnpu = FastGatedNPU(2,3)
+    fastnpu = FastRealNPU(2,3)
     loss(p) = sum(abs2, fastnpu(x,p) .- reshape(x[1,:],1,:))
+    @test DiffEqFlux.paramlength(fastnpu) == 8
+    @test length(DiffEqFlux.initial_params(fastnpu)) == 8
 
     p = Flux.destructure(npu)[1]
     gf = Flux.gradient(loss, p)[1]

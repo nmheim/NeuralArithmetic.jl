@@ -7,24 +7,26 @@ export iNALU
 Improved NALU that can process negative numbers by recovering the multiplication
 sign. Implemented as suggested in: https://arxiv.org/abs/2003.07629
 """
-struct iNALU
+struct iNALU{Tg<:AbstractMatrix,T<:Real}
     a_nac::NAC
     m_nac::NAC
-    G::AbstractMatrix
-    ϵ::Real
-    ω::Real
+    G::Tg
+    ϵ::T
+    ω::T
 end
 
 Flux.@functor iNALU
 
-iNALU(a_nac::NAC, m_nac::NAC, G::AbstractMatrix) = iNALU(a_nac, m_nac, G, 1e-7, 20)
+iNALU(a_nac::NAC, m_nac::NAC, G::AbstractMatrix) =
+  iNALU(a_nac, m_nac, G{T}, T(1e-7), T(20)) where T
 
 function iNALU(in::Int, out::Int;
               initNAC=glorot_uniform, initG=glorot_uniform, ϵ=1e-7, ω=20)
     a_nac = NAC(in, out, initW=initNAC, initM=initNAC)
     m_nac = NAC(in, out, initW=initNAC, initM=initNAC)
     G = initG(out, in)
-    iNALU(a_nac,m_nac,G,ϵ,ω)
+    T = eltype(G)
+    iNALU(a_nac,m_nac,G,T(ϵ),T(ω))
 end
 
 function Base.sign(nalu::iNALU, x::AbstractVector) 
@@ -53,8 +55,5 @@ function (nalu::iNALU)(x)
     g .* a .+ (1.0 .- g) .* m .* s
 end
 
-function Base.show(io::IO, l::iNALU)
-    in = size(l.G, 2)
-    out = size(l.G, 1)
-    print(io, "iNALU(in=$in, out=$out)")
-end
+Base.show(io::IO, l::iNALU) =
+  print(io, "iNALU(in=$(size(l.G,2)), out=$(size(l.G,1)))")
