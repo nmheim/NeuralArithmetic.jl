@@ -13,12 +13,12 @@ And additionally `FastNAU` and `FastNPU` for use with [DiffEqFlux.jl](https://gi
 
 # Simple Neural Arithmetic
 
-As an example, we can train different layers to learn the function f
+As an example, we can train different layers to learn the function
 ```julia
 f(x,y) = (x+y, x*y, 1/x, sqrt(x))
 ```
-which has two inputs and four outputs.  The figure below plots the prediction error
-of each layer and output for training and testing datapoints.  All layers that
-were trained on a range U(0.1,2).
+which has two inputs and four outputs. For mo.  The figure below plots the error
+of each layer and arithmetic operation in `f` for training and testing datapoints.  All layers
+were trained on the input range U(0.1,2). For more details take a look at [our paper](https://arxiv.org/abs/2006.01681).
 
 ![layers](img/layers.png)
