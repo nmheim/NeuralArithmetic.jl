@@ -7,7 +7,7 @@ Collection of layers that can perform arithmetic operations such as addition,
 subtraction, multiplication, and division in a single layer.  Implements
 [NALU](https://arxiv.org/abs/1808.00508),
 [iNALU](https://arxiv.org/abs/2003.07629),
-[NMU & NAU](https://openreview.net/forum?id=H1gNOeHKPS), and [NPU](...).
+[NMU & NAU](https://openreview.net/forum?id=H1gNOeHKPS), and [NPU](https://arxiv.org/abs/2006.01681).
 
 And additionally `FastNAU` and `FastNPU` for use with [DiffEqFlux.jl](https://github.com/SciML/DiffEqFlux.jl).
 
