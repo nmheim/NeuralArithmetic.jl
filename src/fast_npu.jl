@@ -1,7 +1,7 @@
 export FastNPU, FastRealNPU
 
 """
-  FastNPU(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros) <: FastLayer
+  FastNPU(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros, initg=init05) <: FastLayer
 
 Neural Power Unit that can learn arbitrary power functions by using a complex
 weights. Uses gating on inputs to simplify learning. In 1D the layer looks
@@ -20,10 +20,8 @@ struct FastNPU{F} <: DiffEqFlux.FastLayer
     out::Int
     initial_params::F
     function FastNPU(in::Int, out::Int;
-                           initRe=Flux.glorot_uniform, initIm=Flux.glorot_uniform)
-        initial_params() = vcat(vec(initRe(out,in)),
-                                vec(initIm(out,in)),
-                                Flux.ones(in)/2)
+        initRe=Flux.glorot_uniform, initIm=Flux.glorot_uniform, initg=init05)
+        initial_params() = vcat(vec(initRe(out,in)), vec(initIm(out,in)), initg(in))
         new{typeof(initial_params)}(in, out, initial_params)
     end
 end
@@ -46,7 +44,7 @@ end
 
 
 """
-    FastRealNPU(in::Int, out::Int; init=glorot_uniform) <: FastLayer
+    FastRealNPU(in::Int, out::Int; initRe=glorot_uniform, initg=init05) <: FastLayer
 
 NPU without imaginary weights. FastLayer meant for use with DiffEqFlux.
 """
@@ -54,8 +52,8 @@ struct FastRealNPU{F} <: DiffEqFlux.FastLayer
     in::Int
     out::Int
     initial_params::F
-    function FastRealNPU(in::Int, out::Int; init=Flux.glorot_uniform)
-        initial_params() = vcat(vec(init(out,in)), Flux.ones(in)/2)
+    function FastRealNPU(in::Int, out::Int; initRe=Flux.glorot_uniform, initg=init05)
+        initial_params() = vcat(vec(initRe(out,in)), initg(in))
         new{typeof(initial_params)}(in, out, initial_params)
     end
 end
