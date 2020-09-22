@@ -1,7 +1,7 @@
 export NaiveNPU, RealNaiveNPU, RealNPU, NPU
 
 """
-  NPU(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros)
+  NPU(in::Int, out::Int; initRe=glorot_uniform, initIm=Flux.zeros, initg=init05)
 
 Neural Power Unit that can learn arbitrary power functions by using a complex
 weights. Uses gating on inputs to simplify learning. In 1D the layer looks
@@ -20,11 +20,11 @@ struct NPU{M<:AbstractMatrix,V<:AbstractVector}
 end
 
 function NPU(in::Int, out::Int;
-                   initRe=glorot_uniform, initIm=Flux.zeros)
-   Re = initRe(out, in) 
-   Im = initIm(out, in)
-   g  = Flux.ones(in)/2
-   NPU(Re,Im,g)
+    initRe=glorot_uniform, initIm=Flux.zeros, initg=init05)
+    Re = initRe(out, in)
+    Im = initIm(out, in)
+    g  = initg(in)
+    NPU(Re,Im,g)
 end
 
 Flux.@functor NPU
@@ -44,21 +44,21 @@ end
 
 
 """
-    RealNPU(in::Int, out::Int; init=glorot_uniform)
+    RealNPU(in::Int, out::Int; initRe=glorot_uniform, initg=init05)
 
 NPU without imaginary weights.
 """
 struct RealNPU{Tw<:AbstractMatrix,Tg<:AbstractVector}
-    W::Tw
+    Re::Tw
     g::Tg
 end
 
-RealNPU(in::Int, out::Int; init=Flux.glorot_uniform) =
-    RealNPU(init(out,in), Flux.ones(in)/2)
+RealNPU(in::Int, out::Int; initRe=Flux.glorot_uniform, initg=init05) =
+    RealNPU(initRe(out,in), initg(in))
 
 Flux.@functor RealNPU
 
-function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
+function mult(Re::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
     g = min.(max.(g, 0), 1)
 
     r = abs.(x) .+ eps(T)
@@ -67,10 +67,10 @@ function mult(W::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) w
     k = max.(-sign.(x), 0) .* T(pi)
     k = g .* k
 
-    z = exp.(W * log.(r)) .* cos.(W*k)
+    z = exp.(Re * log.(r)) .* cos.(Re*k)
 end
 
-(l::RealNPU)(x) = mult(l.W, l.g, x)
+(l::RealNPU)(x) = mult(l.Re, l.g, x)
 
 
 """
@@ -101,24 +101,24 @@ end
 
 
 """
-  RealNaiveNPU(in::Int, out::Int; init=glorot_uniform)
+  RealNaiveNPU(in::Int, out::Int; initRe=glorot_uniform)
 
 NaiveNPU without imaginary weights.
 """
 struct RealNaiveNPU{T<:AbstractMatrix}
-    W::T
+    Re::T
 end
 
-RealNaiveNPU(in::Int, out::Int; init=glorot_uniform) = RealNaiveNPU(init(out,in))
+RealNaiveNPU(in::Int, out::Int; initRe=glorot_uniform) = RealNaiveNPU(initRe(out,in))
 Flux.@functor RealNaiveNPU
 
-function mult(W::AbstractMatrix{T}, x::AbstractArray{T}) where T
+function mult(Re::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
     k = max.(-sign.(x), 0) .* T(pi)
-    exp.(W * log.(r)) .* cos.(W*k)
+    exp.(Re * log.(r)) .* cos.(Re*k)
 end
 
-(l::RealNaiveNPU)(x) = mult(l.W, x)
+(l::RealNaiveNPU)(x) = mult(l.Re, x)
 
 
 Base.show(io::IO, l::NPU) =
@@ -126,6 +126,8 @@ Base.show(io::IO, l::NPU) =
 Base.show(io::IO, l::NaiveNPU) =
   print(io,"NaiveNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
 Base.show(io::IO, l::RealNPU) =
-  print(io,"RealNPU(in=$(size(l.W,2)), out=$(size(l.W,1)))")
+  print(io,"RealNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
 Base.show(io::IO, l::RealNaiveNPU) =
-  print(io,"RealNaiveNPU(in=$(size(l.W,2)), out=$(size(l.W,1)))")
+  print(io,"RealNaiveNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
+
+init05(s...) = Flux.ones(s...) ./ 2

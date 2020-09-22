@@ -14,8 +14,8 @@
     Flux.train!(loss, ps, train_data, opt)
 
     npu = npu |> cpu
-    @test all(isapprox.(npu.Re[:,1], ones(3), atol=1e-2))
-    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-2))
+    @test all(isapprox.(npu.Re[:,1], ones(3), atol=1e-3))
+    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-3))
 
 end
 
@@ -35,8 +35,8 @@ end
     Flux.train!(loss, ps, train_data, opt)
 
     npu = npu |> cpu
-    @test all(isapprox.(npu.W[:,1], ones(3), atol=1e-2))
-    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-2))
+    @test all(isapprox.(npu.Re[:,1], ones(3), atol=1e-3))
+    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-3))
 
 end
 
@@ -56,7 +56,7 @@ end
     Flux.train!(loss, ps, train_data, opt)
 
     npu = npu |> cpu
-    @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-2))
+    @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-3))
 
 end
 
@@ -76,6 +76,6 @@ end
     Flux.train!(loss, ps, train_data, opt)
 
     npu = npu |> cpu
-    @test all(isapprox.(npu.W, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-2))
+    @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-3))
 
 end
