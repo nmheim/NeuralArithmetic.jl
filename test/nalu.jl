@@ -9,7 +9,7 @@
     @test length(ps) == 4
 
     loss() = Flux.mse(nalu(x), reshape(repeat(x[1,:] .* x[2,:], inner=(3,1)),3,10))
-    opt = ADAM(0.5)
+    opt = ADAM(1.)
     train_data = Iterators.repeated((), 2000)
     Flux.train!(loss, ps, train_data, opt)
 
