@@ -1,9 +1,11 @@
 module NeuralArithmetic
 
+using ChainRulesCore
 using Flux
-using Zygote
-using Flux: glorot_uniform, destructure
 using Requires
+using Zygote
+
+using Flux: glorot_uniform, destructure
 
 include("nau.jl")
 include("nmu.jl")

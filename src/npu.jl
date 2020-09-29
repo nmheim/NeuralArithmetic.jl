@@ -30,7 +30,7 @@ end
 Flux.@functor NPU
 
 function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, g::AbstractVector{T}, x::AbstractArray{T}) where T
-    g = min.(max.(g, 0), 1)
+    g = gateclip(g)
 
     r = abs.(x) .+ eps(T)
     r = g .* r .+ (1 .- g)
@@ -41,6 +41,8 @@ function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, g::AbstractVector{T}
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
 (l::NPU)(x) = mult(l.Re, l.Im, l.g, x)
+
+
 
 
 """
@@ -73,6 +75,8 @@ end
 (l::RealNPU)(x) = mult(l.Re, l.g, x)
 
 
+
+
 """
     NaiveNPU(in::Int, out::Int; initRe=glorot_uniform, initIm=zeros)
 
@@ -93,11 +97,34 @@ Flux.@functor NaiveNPU
 
 function mult(Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
     r = abs.(x) .+ eps(T)
-    k = max.(-sign.(x), 0) .* T(pi)
+    k = signclip(x)
     exp.(Re*log.(r) - Im*k) .* cos.(Re*k + Im*log.(r))
 end
 
 (l::NaiveNPU)(x) = mult(l.Re, l.Im, x)
+
+function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
+    r  = abs.(x) .+ eps(T)
+    k  = signclip(x)
+    ex = Re*log.(r) - Im*k
+    cx = Re*k + Im*log.(r)
+    z  = exp.(ex) .* cos.(cx)
+
+    function mult_pullback(ΔΩ::AbstractVector)
+        sx  = 1 ./ sign.(x)
+        a   = exp.(ex) .* sin.(cx)
+        dX  = sx' .* (Re .* z - Im .* a)
+        dRe = z * log.(r)' - a * k'
+        dIm = z * k' - a * log.(r)'
+        (NO_FIELDS,
+         @thunk(dRe .* reshape(ΔΩ,:,1)),
+         @thunk(dIm .* reshape(ΔΩ,:,1)),
+         @thunk(dX' * ΔΩ))
+    end
+
+    z, mult_pullback
+end
+
 
 
 """
@@ -121,13 +148,27 @@ end
 (l::RealNaiveNPU)(x) = mult(l.Re, x)
 
 
-Base.show(io::IO, l::NPU) =
-  print(io,"NPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
-Base.show(io::IO, l::NaiveNPU) =
-  print(io,"NaiveNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
-Base.show(io::IO, l::RealNPU) =
-  print(io,"RealNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
-Base.show(io::IO, l::RealNaiveNPU) =
-  print(io,"RealNaiveNPU(in=$(size(l.Re,2)), out=$(size(l.Re,1)))")
 
 init05(s...) = Flux.ones(s...) ./ 2
+
+
+# TODO: add in other layers and write rrule
+signclip(x::AbstractArray{T}) where T = max.(-sign.(x), 0) * T(π)
+gateclip(g::AbstractVector) = min.(max.(g, 0), 1)
+
+#function ChainRulesCore.rrule(::typeof(gateclip), g)
+#    ghat = gateclip(g)
+#    gateclip_pullback(ΔΩ) = (NO_FIELDS, One() .* ΔΩ)
+#    #gateclip_pullback(ΔΩ) = (NO_FIELDS, fill!(similar(g),1))
+#    return ghat, gateclip_pullback
+#end
+
+
+function _repr(l)
+    T = string(nameof(typeof(l)))
+    "$T(in=$(size(l.Re,2)), out=$(size(l.Re,1)))"
+end
+Base.show(io::IO, l::NPU) = print(io, _repr(l))
+Base.show(io::IO, l::NaiveNPU) = print(io, _repr(l))
+Base.show(io::IO, l::RealNPU) = print(io, _repr(l))
+Base.show(io::IO, l::RealNaiveNPU) = print(io, _repr(l))
