@@ -1,4 +1,3 @@
-#=
 @testset "NPU" begin
 
     npu = NPU(2,3) |> gpu
@@ -16,7 +15,7 @@
 
     npu = npu |> cpu
     @test all(isapprox.(npu.Re[:,1], ones(3), atol=1e-3))
-    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-3))
+    @test all(isapprox.(NeuralArithmetic.gateclip(npu.g), [1.0, 0.0], atol=1e-3))
 
 end
 
@@ -40,19 +39,12 @@ end
     @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-3))
 
 end
-=#
 
 @testset "NaiveNPU" begin
-    Re, Rē  = ones(3,2), ones(3,2)
-    Im, Im̄  = ones(3,2), ones(3,2)
-    x , x̄   = ones(2),   ones(2)
-    rrule_test(NeuralArithmetic.mult, rand(3), (Re,Rē ), (Im,Im̄ ), (x,x̄ ))
-
-    #Re, Rē  = ones(3,2), ones(3,2)
-    #Im, Im̄  = ones(3,2), ones(3,2)
-    #x , x̄   = ones(2,10), ones(2,10)
-    #rrule_test(NeuralArithmetic.mult, rand(3,10), (Re,Rē ), (Im,Im̄ ), (x,x̄ ))
-
+    Re, Rē  = randn(3,2), randn(3,2)
+    Im, Im̄  = randn(3,2), randn(3,2)
+    x , x̄   = randn(2),   randn(2)
+    rrule_test(NeuralArithmetic.mult, randn(3), (Re,Rē), (Im,Im̄), (x,x̄), rtol=1e-3, atol=1e-3)
 
     npu = NaiveNPU(2,3) |> gpu
     x = rand(Float32,2,10) |> gpu
@@ -68,12 +60,10 @@ end
     Flux.train!(loss, ps, train_data, opt)
 
     npu = npu |> cpu
-    display(npu.Re)
     @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-3))
 
 end
 
-#=
 @testset "RealNaiveNPU" begin
 
     npu = RealNaiveNPU(2,3) |> gpu
@@ -93,4 +83,3 @@ end
     @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-3))
 
 end
-=#
