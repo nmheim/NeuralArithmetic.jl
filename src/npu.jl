@@ -116,15 +116,11 @@ function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::Abstrac
     z  = exp.(ex) .* cos.(cx)
 
     function mult_pullback(ΔΩ::AbstractVector)
-        sx  = sign.(x) ./ x
         a   = exp.(ex) .* sin.(cx)
-        dX  = sx' .* (Re .* z - Im .* a)
-        dRe =  z*log.(r)' - a*k'
-        dIm = -z*k' - a*log.(r)'
-        (NO_FIELDS,
-         @thunk(dRe .* reshape(ΔΩ,:,1)),
-         @thunk(dIm .* reshape(ΔΩ,:,1)),
-         @thunk(dX' * ΔΩ))
+        dX  = @thunk(((sign.(x) ./ x)' .* (Re .* z - Im .* a))' * ΔΩ)
+        dRe = @thunk( (z*log.(r)' - a*k') .* reshape(ΔΩ,:,1))
+        dIm = @thunk((-z*k' - a*log.(r)') .* reshape(ΔΩ,:,1))
+        (NO_FIELDS, dRe, dIm, dX)
     end
 
     z, mult_pullback
