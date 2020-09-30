@@ -103,7 +103,12 @@ end
 
 (l::NaiveNPU)(x) = mult(l.Re, l.Im, x)
 
-function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractArray{T}) where T
+function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractVector{T}) where T
+    # ∂zᵢ/∂xᵢ = sign(xₖ)/xₖ * (Reᵢₖ*zᵢ - Imᵢₖ*exp(exᵢ)*sin(cxᵢ))
+    # ∂zᵢ/Reₖₗ= zᵢ*log(|xₗ|) - kₗsin(cxᵢ)exp(exᵢ)
+    # ∂zᵢ/Imₖₗ= zᵢ*kₗ - log(|xₗ|)sin(cxᵢ)exp(exᵢ)
+    # where: ex = Re*log(|x|) - Im*k, cx = Re*k + Im*log(|x|)
+
     r  = abs.(x) .+ eps(T)
     k  = signclip(x)
     ex = Re*log.(r) - Im*k
@@ -111,11 +116,11 @@ function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::Abstrac
     z  = exp.(ex) .* cos.(cx)
 
     function mult_pullback(ΔΩ::AbstractVector)
-        sx  = 1 ./ sign.(x)
+        sx  = sign.(x) ./ x
         a   = exp.(ex) .* sin.(cx)
         dX  = sx' .* (Re .* z - Im .* a)
-        dRe = z * log.(r)' - a * k'
-        dIm = z * k' - a * log.(r)'
+        dRe =  z*log.(r)' - a*k'
+        dIm = -z*k' - a*log.(r)'
         (NO_FIELDS,
          @thunk(dRe .* reshape(ΔΩ,:,1)),
          @thunk(dIm .* reshape(ΔΩ,:,1)),
@@ -124,7 +129,6 @@ function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::Abstrac
 
     z, mult_pullback
 end
-
 
 
 """
