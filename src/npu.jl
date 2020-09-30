@@ -104,7 +104,7 @@ end
 (l::NaiveNPU)(x) = mult(l.Re, l.Im, x)
 
 function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractVector{T}) where T
-    # ∂zᵢ/∂xᵢ = sign(xₖ)/xₖ * (Reᵢₖ*zᵢ - Imᵢₖ*exp(exᵢ)*sin(cxᵢ))
+    # ∂zᵢ/∂xᵢ = 1/xₖ * (Reᵢₖ*zᵢ - Imᵢₖ*exp(exᵢ)*sin(cxᵢ))
     # ∂zᵢ/Reₖₗ= zᵢ*log(|xₗ|) - kₗsin(cxᵢ)exp(exᵢ)
     # ∂zᵢ/Imₖₗ= zᵢ*kₗ - log(|xₗ|)sin(cxᵢ)exp(exᵢ)
     # where: ex = Re*log(|x|) - Im*k, cx = Re*k + Im*log(|x|)
@@ -117,7 +117,7 @@ function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::Abstrac
 
     function mult_pullback(ΔΩ::AbstractVector)
         a   = exp.(ex) .* sin.(cx)
-        dX  = @thunk(((sign.(x) ./ x)' .* (Re .* z - Im .* a))' * ΔΩ)
+        dX  = @thunk(((1 ./ x)' .* (Re .* z - Im .* a))' * ΔΩ)
         dRe = @thunk( (z*log.(r)' - a*k') .* reshape(ΔΩ,:,1))
         dIm = @thunk((-z*k' - a*log.(r)') .* reshape(ΔΩ,:,1))
         (NO_FIELDS, dRe, dIm, dX)
@@ -125,6 +125,26 @@ function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::Abstrac
 
     z, mult_pullback
 end
+#=
+function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractMatrix{T}) where T
+    r  = abs.(x) .+ eps(T)
+    k  = signclip(x)
+    ex = Re*log.(r) - Im*k
+    cx = Re*k + Im*log.(r)
+    z  = exp.(ex) .* cos.(cx)
+
+    function mult_pullback(ΔΩ::AbstractMatrix)
+        a   = exp.(ex) .* sin.(cx)
+        dX  = @thunk(x)  #TODO: implement this!
+        dRe = @thunk( ((ΔΩ .* z)*log.(r)' - (ΔΩ .* a)*k'))
+        dIm = @thunk((-(ΔΩ .* z)*k' - (ΔΩ .* a)*log.(r)'))
+        (NO_FIELDS, dRe, dIm, dX)
+    end
+
+    z, mult_pullback
+end
+=#
+
 
 
 """
@@ -157,10 +177,9 @@ signclip(x::AbstractArray{T}) where T = max.(-sign.(x), 0) * T(π)
 gateclip(g::AbstractVector) = min.(max.(g, 0), 1)
 
 #function ChainRulesCore.rrule(::typeof(gateclip), g)
-#    ghat = gateclip(g)
-#    gateclip_pullback(ΔΩ) = (NO_FIELDS, One() .* ΔΩ)
-#    #gateclip_pullback(ΔΩ) = (NO_FIELDS, fill!(similar(g),1))
-#    return ghat, gateclip_pullback
+#    ĝ = gateclip(g)
+#    gateclip_pullback(ΔΩ) = (NO_FIELDS, ΔΩ)
+#    return ĝ, gateclip_pullback
 #end
 
 
