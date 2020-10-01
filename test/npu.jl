@@ -83,3 +83,11 @@ end
     @test all(isapprox.(npu.Re, [1.0 0.0; 1.0 0.0; 1.0 0.0], atol=1e-3))
 
 end
+
+@testset "gateclip" begin
+    g = [1.5, 0.5, -0.5]
+    @test isapprox(NeuralArithmetic.gateclip(g), [1.,0.5,0.])
+    f(g) = sum(NeuralArithmetic.gateclip(g))
+    dg = Flux.gradient(f, g)[1]
+    @test isapprox(dg, ones(3))
+end
