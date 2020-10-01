@@ -36,7 +36,7 @@ end
 
     npu = npu |> cpu
     @test all(isapprox.(npu.Re[:,1], ones(3), atol=1e-3))
-    @test all(isapprox.(npu.g, [1.0, 0.0], atol=1e-3))
+    @test all(isapprox.(NeuralArithmetic.gateclip(npu.g), [1.0, 0.0], atol=1e-3))
 
 end
 
