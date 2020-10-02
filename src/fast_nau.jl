@@ -19,3 +19,5 @@ Zygote.@adjoint function (f::FastNAU)(x,p)
     W = reshape(p, f.out, f.in)
     f(x,p), ȳ -> (nothing, W'ȳ, vec(ȳ * x'))
 end
+
+Base.show(io::IO, l::FastNAU) = print(io,"FastNAU(in=$(l.in), out=$(l.out))")
