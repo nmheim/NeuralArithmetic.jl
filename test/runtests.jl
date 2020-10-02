@@ -22,7 +22,6 @@ include("fast_npu.jl")
               "FastNPU","FastRealNPU","FastNAU"]
     for l in layers
         m = eval(Symbol(l))(2,2)
-        @info m
         @test repr(m) == "$l(in=2, out=2)"
     end
 end
