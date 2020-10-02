@@ -72,3 +72,7 @@ function (f::FastRealNPU)(x::AbstractArray,p::AbstractVector)
     (W,g) = _restructure(f,p)
     mult(W,g,x)
 end
+
+
+Base.show(io::IO, l::FastNPU) = print(io,"FastNPU(in=$(l.in), out=$(l.out))")
+Base.show(io::IO, l::FastRealNPU) = print(io,"FastRealNPU(in=$(l.in), out=$(l.out))")

@@ -16,3 +16,13 @@ include("inalu.jl")
 using DiffEqFlux
 include("fast_nau.jl")
 include("fast_npu.jl")
+
+@testset "show functions" begin
+    layers = ["NPU","RealNPU","NaiveNPU","NAU","NMU","NAC","NALU",
+              "FastNPU","FastRealNPU","FastNAU"]
+    for l in layers
+        m = eval(Symbol(l))(2,2)
+        @info m
+        @test repr(m) == "$l(in=2, out=2)"
+    end
+end
