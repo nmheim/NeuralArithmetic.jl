@@ -17,8 +17,10 @@ As an example, we can train different layers to learn the function
 ```julia
 f(x,y) = (x+y, x*y, 1/x, sqrt(x))
 ```
-which has two inputs and four outputs. For mo.  The figure below plots the error
-of each layer and arithmetic operation in `f` for training and testing datapoints.  All layers
-were trained on the input range U(0.1,2). For more details take a look at [our paper](https://arxiv.org/abs/2006.01681).
+which has two inputs and four outputs. For mo.  The figure below plots the
+error of each layer and arithmetic operation in `f` for training and testing
+datapoints.  All layers were trained on the input range U(0.1,2). For more
+details take a look at [our paper](https://arxiv.org/abs/2006.01681) and
+the [code to reproduce](https://github.com/nmheim/NeuralPowerUnits) the image below.
 
 ![layers](img/layers.png)
