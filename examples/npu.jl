@@ -9,7 +9,7 @@ Random.seed!(1)
 # define the learning task R²->R⁴
 function task(x::Vector)
     a, b = x[1], x[2]
-    [a+b, a*b, a/b, sqrt(b)]
+    [a+b, a*b, 1/b, sqrt(b)]
 end
 task(x::Matrix) = mapslices(task, x, dims=1)
 
@@ -45,20 +45,25 @@ Flux.train!(loss, ps, data, opt, cb=cbs)
 @info "NAU" model[2].W
 
 using Plots
-p1 = heatmap(model[1].Re[end:-1:1,:], aspectratio=1, title="Learned NPU.Re", clim=(-1,1), c=:bluesreds)
-p2 = heatmap(model[1].Im[end:-1:1,:], aspectratio=1, title="Learned NPU.Im", clim=(-1,1), c=:bluesreds)
-p3 = heatmap(reshape(model[1].g,:,1), aspectratio=1, title="Learned NPU.g", clim=(-1,1), c=:bluesreds)
-p4 = heatmap(model[2].W[end:-1:1,:], aspectratio=1, title="Learned NAU.W", clim=(-1,1), c=:bluesreds)
+pyplot()
+p1 = heatmap(model[1].Re, yflip=true, aspectratio=1,
+             ylabel="NPU Re", clim=(-1,1), c=:bluesreds, colorbar=false)
+p2 = heatmap(model[1].Im, yflip=true, aspectratio=1, title="Learned Solution",
+             ylabel="NPU Im", clim=(-1,1), c=:bluesreds, colorbar=false)
+p4 = heatmap(model[2].W, yflip=true, aspectratio=1,
+             ylabel="NAU W", clim=(-1,1), c=:bluesreds)
 
-Re = [1 1; 1 -1; 0 0; 0 1; 1 0; 0 0]
+Re = [1 1; 1 0; 0 0; 0 1; 0 0; 0 -1]
 Im = zeros(6,2)
 g  = ones(2)
-W  = [0 0 0 1 1 0;
+W  = [0 1 0 1 0 0;
       1 0 0 0 0 0;
-      0 1 0 0 0 0;
+      0 0 0 0 0 1;
       0 0 0 0.5 0 0]
-p5 = heatmap(Re[end:-1:1,:], aspectratio=1, title="Perfect NPU.Re", clim=(-1,1), c=:bluesreds)
-p6 = heatmap(Im[end:-1:1,:], aspectratio=1, title="Perfect NPU.Im", clim=(-1,1), c=:bluesreds)
-p7 = heatmap(g[end:-1:1,:], aspectratio=1, title="Perfect NPU.g", clim=(-1,1), c=:bluesreds)
-p8 = heatmap(W[end:-1:1,:], aspectratio=1, title="Perfect NAU.W", clim=(-1,1), c=:bluesreds)
-plt1 = plot(p1,p2,p3,p4,p5,p6,p7,p8,layout=(2,4),size=(2000,1000))
+p5 = heatmap(Re, yflip=true, aspectratio=1,
+             ylabel="NPU Re", clim=(-1,1), c=:bluesreds, colorbar=false)
+p6 = heatmap(Im, yflip=true, aspectratio=1, title="Perfect Solution",
+             ylabel="NPU Im", clim=(-1,1), c=:bluesreds, colorbar=false)
+p8 = heatmap(W, yflip=true, aspectratio=1,
+             ylabel="NAU W", clim=(-1,1), c=:bluesreds)
+plt1 = plot(p1,p2,p4,p5,p6,p8,layout=(2,3), size=(800,370))
