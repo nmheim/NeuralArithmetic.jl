@@ -13,15 +13,13 @@ Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 ChainRulesCore = "0.9"
 Flux = "0.10, 0.11"
 Requires = "1"
-Zygote = "0.4, 0.5"
+Zygote = "0.4, 0.5, 0.6"
 julia = "1"
 
 [extras]
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
-DiffEqFlux = "aae7a2af-3d4f-5e19-a356-7da93b79d9d0"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["CUDA", "ChainRulesTestUtils", "DiffEqFlux", "LinearAlgebra", "Test"]
+test = ["ChainRulesTestUtils", "LinearAlgebra", "Test"]
