@@ -16,18 +16,17 @@ NMU(in::Int, out::Int; init=rand) = NMU(init(out,in))
 
 weights(m::NMU) = min.(max.(m.W, 0), 1)
 
-function (m::NMU)(x::AbstractVector)
-    W = weights(m)
-    z = W .* reshape(x,1,:) .+ 1 .- W
+function (m::NMU)(x::AbstractMatrix)
+    W  = weights(m)
+    Wr = reshape(W, size(W)..., 1)
+    xr = reshape(x, 1, size(x)...)
+    z  = Wr .* xr .+ 1 .- W
     dropdims(prod(z, dims=2), dims=2)
 end
 
-function (m::NMU)(x::AbstractMatrix)
-    buf = Zygote.Buffer(x, size(m.W,1), size(x,2))
-    for i in 1:size(x,2)
-        buf[:,i] = m(x[:,i])
-    end
-    copy(buf)
+function (m::NMU)(x::AbstractVector)
+    z = m(reshape(x,:,1))
+    dropdims(z,dims=2)
 end
 
 Flux.@functor NMU
