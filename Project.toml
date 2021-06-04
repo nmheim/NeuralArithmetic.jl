@@ -1,7 +1,7 @@
 name = "NeuralArithmetic"
 uuid = "ab1feca7-9272-4c7d-b713-789d3461e743"
 authors = ["Niklas Heim <niklas.heim@aic.fel.cvut.cz>"]
-version = "1.0.5"
+version = "1.0.6"
 
 [deps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
