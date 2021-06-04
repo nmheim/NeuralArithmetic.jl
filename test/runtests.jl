@@ -3,6 +3,9 @@ using Flux
 using LinearAlgebra
 using NeuralArithmetic
 using NeuralArithmetic: weights, gate
+using Random
+
+Random.seed!(0)
 
 include("nau.jl")
 include("nmu.jl")
