@@ -132,7 +132,7 @@ gateclip(g::AbstractVector) = min.(max.(g, 0), 1)
 
 function ChainRulesCore.rrule(::typeof(gateclip), g)
     ĝ = gateclip(g)
-    gateclip_pullback(ΔΩ) = (NO_FIELDS, ΔΩ)
+    gateclip_pullback(ΔΩ) = (NoTangent(), ΔΩ)
     return ĝ, gateclip_pullback
 end
 
