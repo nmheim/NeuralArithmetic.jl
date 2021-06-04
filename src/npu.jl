@@ -103,49 +103,6 @@ end
 
 (l::NaiveNPU)(x) = mult(l.Re, l.Im, x)
 
-function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractVector{T}) where T
-    # ∂zᵢ/∂xᵢ = 1/xₖ * (Reᵢₖ*zᵢ - Imᵢₖ*exp(exᵢ)*sin(cxᵢ))
-    # ∂zᵢ/Reₖₗ= zᵢ*log(|xₗ|) - kₗsin(cxᵢ)exp(exᵢ)
-    # ∂zᵢ/Imₖₗ= zᵢ*kₗ - log(|xₗ|)sin(cxᵢ)exp(exᵢ)
-    # where: ex = Re*log(|x|) - Im*k, cx = Re*k + Im*log(|x|)
-
-    r  = abs.(x) .+ eps(T)
-    k  = signk(x)
-    ex = Re*log.(r) - Im*k
-    cx = Re*k + Im*log.(r)
-    z  = exp.(ex) .* cos.(cx)
-
-    function mult_pullback(ΔΩ::AbstractVector)
-        a   = exp.(ex) .* sin.(cx)
-        dX  = @thunk(((1 ./ x)' .* (Re .* z - Im .* a))' * ΔΩ)
-        dRe = @thunk( (z*log.(r)' - a*k') .* reshape(ΔΩ,:,1))
-        dIm = @thunk((-z*k' - a*log.(r)') .* reshape(ΔΩ,:,1))
-        (NO_FIELDS, dRe, dIm, dX)
-    end
-
-    z, mult_pullback
-end
-#=
-function ChainRulesCore.rrule(::typeof(mult), Re::AbstractMatrix{T}, Im::AbstractMatrix{T}, x::AbstractMatrix{T}) where T
-    r  = abs.(x) .+ eps(T)
-    k  = signk(x)
-    ex = Re*log.(r) - Im*k
-    cx = Re*k + Im*log.(r)
-    z  = exp.(ex) .* cos.(cx)
-
-    function mult_pullback(ΔΩ::AbstractMatrix)
-        a   = exp.(ex) .* sin.(cx)
-        dX  = @thunk(x)  #TODO: implement this!
-        dRe = @thunk( ((ΔΩ .* z)*log.(r)' - (ΔΩ .* a)*k'))
-        dIm = @thunk((-(ΔΩ .* z)*k' - (ΔΩ .* a)*log.(r)'))
-        (NO_FIELDS, dRe, dIm, dX)
-    end
-
-    z, mult_pullback
-end
-=#
-
-
 
 """
   RealNaiveNPU(in::Int, out::Int; initRe=glorot_uniform)
@@ -175,7 +132,7 @@ gateclip(g::AbstractVector) = min.(max.(g, 0), 1)
 
 function ChainRulesCore.rrule(::typeof(gateclip), g)
     ĝ = gateclip(g)
-    gateclip_pullback(ΔΩ) = (NO_FIELDS, ΔΩ)
+    gateclip_pullback(ΔΩ) = (NoTangent(), ΔΩ)
     return ĝ, gateclip_pullback
 end
 

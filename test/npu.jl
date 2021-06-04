@@ -41,10 +41,6 @@ end
 end
 
 @testset "NaiveNPU" begin
-    Re, Rē  = randn(3,2), randn(3,2)
-    Im, Im̄  = randn(3,2), randn(3,2)
-    x , x̄   = randn(2),   randn(2)
-    rrule_test(NeuralArithmetic.mult, randn(3), (Re,Rē), (Im,Im̄), (x,x̄), rtol=1e-3, atol=1e-3)
 
     npu = NaiveNPU(2,3) |> gpu
     x = rand(Float32,2,10) |> gpu
