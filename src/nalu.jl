@@ -32,7 +32,7 @@ function (nalu::NALU)(x)
     a = add(nalu, x)
     m = mult(nalu, x)
     g = gate(nalu, x)
-    g .* a .+ (1.0 .- g) .* m
+    g .* a .+ (1 .- g) .* m
 end
 
 function Base.show(io::IO, l::NALU)
